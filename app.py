@@ -96,6 +96,10 @@ def get_resume_share_link(filename):
     except Exception as e:
         # Return a 500 response with the error message if anything goes wrong
         return jsonify({"error": str(e)}), 500
+    
+@app.route('/', methods=['GET'])
+def home():
+    return "Job Search App is running 🚀", 200
 
 
 if __name__ == '__main__':
