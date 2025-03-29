@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS  
 import random
+import requests
 
 app = Flask(__name__)
 CORS(app)  # <-- Enable CORS for all routes
@@ -71,6 +72,30 @@ def match_resume():
                 break  # Avoid duplicate matches for the same role
 
     return jsonify({"matched_roles": list(matched_roles)})
+
+# --- Proxy to Fetch Shareable Resume Link from Cloud File Sharing Service ---
+@app.route('/api/get-resume-link/<filename>', methods=['GET'])
+def get_resume_share_link(filename):
+    """
+    This endpoint fetches a shareable pre-signed S3 URL for a given resume file.
+
+    It acts as a proxy between the Job Search App and the Cloud File Sharing App.
+    The job search app sends the resume filename to this endpoint, which then
+    calls the cloud storage service to get the actual shareable download link.
+
+    Args:
+        filename (str): The unique filename of the uploaded resume stored in S3.
+
+    Returns:
+        JSON: A response containing the pre-signed URL or an error message.
+    """
+    try:
+        # Call the cloud file sharing API to get a pre-signed S3 link
+        response = requests.get(f"https://scp-backend.onrender.com/share/{filename}")
+        return jsonify(response.json())
+    except Exception as e:
+        # Return a 500 response with the error message if anything goes wrong
+        return jsonify({"error": str(e)}), 500
 
 
 if __name__ == '__main__':
