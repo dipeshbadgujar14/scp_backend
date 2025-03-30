@@ -99,7 +99,7 @@ def get_resume_share_link(filename):
     
 @app.route('/', methods=['GET'])
 def home():
-    return "Job Search App is running 🚀", 200
+    return "Job Search App is running and is up 🚀", 200
 
 
 if __name__ == '__main__':
